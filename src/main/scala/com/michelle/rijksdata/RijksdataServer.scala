@@ -16,6 +16,7 @@ object RijksdataServer {
       client <- BlazeClientBuilder[F](global).stream
       helloWorldAlg = HelloWorld.impl[F]
       jokeAlg = Jokes.impl[F](client)
+      collectionAlg = Collection.impl[F](client)
       rembrandtAlg = RijksCollections.impl[F](client)
 
       // Combine Service Routes into an HttpApp.
@@ -25,6 +26,7 @@ object RijksdataServer {
       httpApp = (
         RijksdataRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
         RijksdataRoutes.jokeRoutes[F](jokeAlg) <+>
+          RijksdataRoutes.collectionRoutes[F](collectionAlg) <+>
         RijksdataRoutes.rembrandtRoutes[F](rembrandtAlg)
       ).orNotFound
 
