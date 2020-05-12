@@ -1,17 +1,17 @@
 package com.michelle.rijksdata
 
-import cats.effect.Sync
+import cats.effect.{IO, Sync}
 import cats.implicits._
-import org.http4s.HttpRoutes
+import org.http4s.{HttpRoutes, Method, Request}
 import org.http4s.dsl.Http4sDsl
 
 
 object RijksdataRoutes {
 
-  def jokeRoutes[F[_]: Sync](J: Jokes[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+  def jokeRoutes[Sync](J: Jokes): HttpRoutes[IO] = {
+    val dsl = new Http4sDsl[IO]{}
     import dsl._
-    HttpRoutes.of[F] {
+    HttpRoutes.of[IO] {
       case GET -> Root / "joke" =>
         for {
           joke <- J.get
@@ -20,10 +20,10 @@ object RijksdataRoutes {
     }
   }
 
-  def collectionRoutes[F[_]: Sync](C: Collection[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+  def collectionRoutes[Sync](C: Collection): HttpRoutes[IO] = {
+    val dsl = new Http4sDsl[IO]{}
     import dsl._
-    HttpRoutes.of[F] {
+    HttpRoutes.of[IO] {
       case GET -> Root / "collection" =>
         for {
           collection <- C.get
@@ -32,10 +32,10 @@ object RijksdataRoutes {
     }
   }
 
-  def helloWorldRoutes[F[_]: Sync](H: HelloWorld[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+  def helloWorldRoutes[Sync](H: HelloWorld): HttpRoutes[IO] = {
+    val dsl = new Http4sDsl[IO]{}
     import dsl._
-    HttpRoutes.of[F] {
+    HttpRoutes.of[IO] {
       case GET -> Root / "hello" / name =>
         for {
           greeting <- H.hello(HelloWorld.Name(name))
@@ -44,10 +44,10 @@ object RijksdataRoutes {
     }
   }
 
-  def rembrandtRoutes[F[_]: Sync](R: RijksCollections[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F] {}
+  def rembrandtRoutes[Sync](R: RijksCollections): HttpRoutes[IO] = {
+    val dsl = new Http4sDsl[IO] {}
     import dsl._
-    HttpRoutes.of[F] {
+    HttpRoutes.of[IO] {
       case GET -> Root / "rembrandt" =>
         for {
           rembrandt <- R.get

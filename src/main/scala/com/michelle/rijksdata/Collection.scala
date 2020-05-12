@@ -1,56 +1,63 @@
 package com.michelle.rijksdata
 
 import cats.Applicative
-import cats.effect.Sync
+import cats.effect.{IO, Sync}
 import cats.implicits._
-import io.circe.{Encoder, Decoder, Json, HCursor}
+import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto._
 import org.http4s._
 import org.http4s.implicits._
-import org.http4s.{EntityDecoder, EntityEncoder, Method, Uri, Request}
+import org.http4s.{EntityDecoder, EntityEncoder, Method, Request, Uri}
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.Method._
 import org.http4s.circe._
 import io.circe.optics.JsonPath._
 
-trait Collection[F[_]]{
-  def get: F[Collection.Artist]
+trait Collection{
+  def get: IO[Collection.Artist]
 }
 
 object Collection {
-  def apply[F[_]](implicit ev: Collection[F]): Collection[F] = ev
+  def apply(implicit ev: Collection): Collection = ev
 
-  final case class Artist(elapsedMilliseconds: Int, count: Int) 
+  final case class Artist(elapsedMilliseconds: Int, count: Int)
+
   object Artist {
     implicit val artistDecoder: Decoder[Artist] = deriveDecoder[Artist]
-    implicit def artistEntityDecoder[F[_]: Sync]: EntityDecoder[F, Artist] = jsonOf
-    implicit val artistEncoder: Encoder[Artist] = deriveEncoder[Artist]
-    implicit def artistEntityEncoder[F[_]: Applicative]: EntityEncoder[F, Artist] = jsonEncoderOf
-  }
 
-  final case class Image(hasImage: Int)
-  object Image {
-    implicit val imageDecoder: Decoder[Image] = deriveDecoder[Image]
-    implicit def imageDecoder[F[_]: Sync]:  EntityDecoder[F, Image] = jsonOf
-    implicit val imageEncoder: Encoder[Image] = deriveEncoder[Image]
-    implicit def imageEntityEncoder[F[_]: Applicative]: EntityEncoder[F, Image] = jsonEncoderOf
+    implicit def artistEntityDecoder[Sync]: EntityDecoder[IO, Artist] = jsonOf
+
+    implicit val artistEncoder: Encoder[Artist] = deriveEncoder[Artist]
+
+    implicit def artistEntityEncoder[Applicative]: EntityEncoder[IO, Artist] = jsonEncoderOf
   }
 
   final case class CollectionError(e: Throwable) extends RuntimeException
 
-  def impl[F[_]: Sync](C: Client[F]): Collection[F] = new Collection[F]{
+  def impl[Sync](C: Client[IO]): Collection = new Collection {
 
-    val dsl = new Http4sClientDsl[F]{}
+    val dsl = new Http4sClientDsl[IO] {
+    }
+
     import dsl._
-      def get: F[Collection.Artist] = {
-        C.expect[Artist](GET(uri"https://www.rijksmuseum.nl/api/nl/collection?key=J5mQRBz3&involvedMaker=Rembrandt+van+Rijn"))
-          .adaptError { case t => CollectionError(t) } // Prevent Client Json Decoding Failure Leaking
-      }
 
-      val getJson: F[Request[F]] = GET(uri"https://www.rijksmuseum.nl/api/nl/collection?key=J5mQRBz3&involvedMaker=Rembrandt+van+Rijn")
-
-      //val _hasImage = root.countFacets.hasimage.int
-      //val getHasImage = _hasImage.getOption(getJson)
+    def get: IO[Collection.Artist] = {
+      C.expect[Artist](GET(uri"https://www.rijksmuseum.nl/api/nl/collection?key=J5mQRBz3&involvedMaker=Rembrandt+van+Rijn"))
+        .adaptError {
+          case t => CollectionError(t)
+        } // Prevent Client Json Decoding Failure Leaking
+    }
   }
 }
+//    val request: F[Request[F]] = (GET(uri"https://www.rijksmuseum.nl/api/nl/collection?key=J5mQRBz3&involvedMaker=Rembrandt+van+Rijn"))
+//    C.fetch[Image](request) {r =>
+//      r.status match {
+//        case Status.Ok =>
+//          for {
+//          json <- r.as[Json]
+//          image <- root.countFacets.hasimage.int
+//              .getOption(json)
+//              .map(i => Image(i)).
+//          } yield image
+
