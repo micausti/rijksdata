@@ -1,4 +1,4 @@
-package com.michelle.rijksdata
+package unused
 
 import cats.effect.IO
 import io.circe.Json
@@ -24,7 +24,8 @@ trait ImageClient {
  def formatFor: IO[Option[Image]]
 }
 
-object ImageClient extends  {
+object ImageClient  {
+
   val url = Uri.unsafeFromString("https://www.rijksmuseum.nl/api/nl/collection?key=J5mQRBz3&involvedMaker=Rembrandt+van+Rijn")
 
   def apply(client: Client[IO]) = new ImageClient {

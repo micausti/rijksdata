@@ -1,6 +1,5 @@
-package com.michelle.rijksdata
+package unused
 
-import cats.Applicative
 import cats.effect.IO
 import cats.implicits._
 import io.circe.{Encoder, Json}
