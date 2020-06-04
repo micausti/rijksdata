@@ -1,4 +1,4 @@
-package unused
+package com.michelle.rijksdata
 
 import cats.effect.IO
 import cats.implicits._
