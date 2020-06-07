@@ -1,13 +1,12 @@
 package com.michelle.rijksdata
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO, Timer}
+import cats.effect.{ContextShift, IO, Timer}
 import cats.implicits._
 import fs2.Stream
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
-import unused.{Collection, HelloWorld}
 
 import scala.concurrent.ExecutionContext.global
 
@@ -17,10 +16,8 @@ object RijksdataServer {
     for {
       client <- BlazeClientBuilder[IO](global).stream
       detailsAlg = Details.impl[IO[Details]](client)
-      rijksdataAlg = Rijksdatas.impl[IO[Rijksdatas]](client)
       jokeAlg = Jokes.impl[IO[Jokes]](client)
-      httpApp = (RijksdataRoutes.itemDetails[IO[Rijksdatas]](rijksdataAlg) <+>
-        RijksdataRoutes.jokeRoutes[IO[Jokes]](jokeAlg) <+>
+      httpApp = (RijksdataRoutes.jokeRoutes[IO[Jokes]](jokeAlg) <+>
         RijksdataRoutes.detailRoutes[IO[Details]](detailsAlg)).orNotFound
       finalHttpApp = Logger.httpApp(true, true)(httpApp)
 
