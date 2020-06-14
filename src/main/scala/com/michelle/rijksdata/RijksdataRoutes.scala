@@ -1,14 +1,14 @@
 package com.michelle.rijksdata
 
 import cats.effect.IO
-import com.michelle.rijksdata.Details.ObjectNumber
+import com.michelle.rijksdata.DetailsClient.ObjectNumber
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
 
 object RijksdataRoutes {
 
-  def detailRoutes[Sync](D: Details): HttpRoutes[IO] = {
+  def detailRoutes[Sync](D: DetailsClient): HttpRoutes[IO] = {
     val dsl = new Http4sDsl[IO] {}
     import dsl._
     HttpRoutes.of[IO] {
