@@ -1,7 +1,7 @@
 package com.michelle.rijksdata
 
 import cats.effect.IO
-import com.michelle.rijksdata.Details.ObjectNumber
+import com.michelle.rijksdata.DetailsClient.ObjectNumber
 import io.circe.generic.semiauto._
 import io.circe.optics.JsonPath.root
 import io.circe.{Decoder, Encoder, Json}
@@ -11,12 +11,12 @@ import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.implicits._
 import org.http4s.{EntityDecoder, EntityEncoder, Request, _}
 
-trait Details {
-  def get(objectNumber: ObjectNumber): IO[Details.Detail]
+trait DetailsClient {
+  def get(objectNumber: ObjectNumber): IO[DetailsClient.Detail]
 }
 
-object Details {
-  def apply(implicit ev: Details): Details = ev
+object DetailsClient {
+  def apply(implicit ev: DetailsClient): DetailsClient = ev
 
   final case class ObjectNumber(value:String)
   final case class Detail(title:String, artist: String, url:String, description:String)
@@ -38,13 +38,13 @@ object Details {
     collectionUrl.withQueryParam("key", "J5mQRBz3") //TODO get a new key and keep somehwere in secrets config
   }
 
-  def impl[Sync](C: Client[IO]): Details = new Details {
+  def impl[Sync](C: Client[IO]): DetailsClient = new DetailsClient {
     val dsl = new Http4sClientDsl[IO] {}
 
     //TODO look at changing this to use optionT
-    def get(objectNumber: ObjectNumber): IO[Details.Detail] = {
+    def get(objectNumber: ObjectNumber): IO[DetailsClient.Detail] = {
       val request: Request[IO] = Request[IO](uri = createUrl(objectNumber))
-      C.fetch[Details.Detail](request) { d =>
+      C.fetch[DetailsClient.Detail](request) { d =>
         d.status match {
           case Status.Ok =>
             for {

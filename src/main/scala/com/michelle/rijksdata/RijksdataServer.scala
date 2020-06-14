@@ -15,10 +15,10 @@ object RijksdataServer {
   def stream[ConcurrentEffect[IO]](implicit T: Timer[IO], C: ContextShift[IO]): Stream[IO, Nothing] = {
     for {
       client <- BlazeClientBuilder[IO](global).stream
-      detailsAlg = Details.impl[IO[Details]](client)
+      detailsAlg = DetailsClient.impl[IO[DetailsClient]](client)
       jokeAlg = Jokes.impl[IO[Jokes]](client)
       httpApp = (RijksdataRoutes.jokeRoutes[IO[Jokes]](jokeAlg) <+>
-        RijksdataRoutes.detailRoutes[IO[Details]](detailsAlg)).orNotFound
+        RijksdataRoutes.detailRoutes[IO[DetailsClient]](detailsAlg)).orNotFound
       finalHttpApp = Logger.httpApp(true, true)(httpApp)
 
       exitCode <- BlazeServerBuilder[IO]
