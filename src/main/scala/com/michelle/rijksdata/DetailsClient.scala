@@ -18,57 +18,58 @@ trait DetailsClient {
 object DetailsClient {
   def apply(implicit ev: DetailsClient): DetailsClient = ev
 
-  final case class ObjectNumber(value:String)
-  final case class Detail(title:String, artist: String, url:String, description:String)
+  final case class ObjectNumber(value: String)
+
+  final case class Detail(title: String, artist: String, url: String, description: String)
 
   object Detail {
 
     implicit val detailDecoder: Decoder[Detail] = deriveDecoder[Detail]
+
     implicit def detailEntityDecoder[Sync]: EntityDecoder[IO, Detail] =
       jsonOf
+
     implicit val detailEncoder: Encoder[Detail] = deriveEncoder[Detail]
+
     implicit def detailEntityEncoder[Applicative]: EntityEncoder[IO, Detail] =
       jsonEncoderOf
   }
 
 
-  def createUrl(objectNumber:ObjectNumber) = {
+  def createUrl(objectNumber: ObjectNumber) = {
     val baseUri = uri"https://www.rijksmuseum.nl/api/en"
     val collectionUrl = baseUri / "collection" / objectNumber.value
     collectionUrl.withQueryParam("key", "J5mQRBz3") //TODO get a new key and keep somehwere in secrets config
   }
 
-  def impl[Sync](C: Client[IO]): DetailsClient = new DetailsClient {
-    val dsl = new Http4sClientDsl[IO] {}
-
+  def apply(C: Client[IO]): DetailsClient = { objectNumber =>
     //TODO look at changing this to use optionT
-    def get(objectNumber: ObjectNumber): IO[DetailsClient.Detail] = {
-      val request: Request[IO] = Request[IO](uri = createUrl(objectNumber))
-      C.fetch[DetailsClient.Detail](request) { d =>
-        d.status match {
-          case Status.Ok =>
-            for {
-              json <- d.as[Json]
-              title <- root.artObject.title.string
-                .getOption(json)
-                .fold[IO[String]](IO.raiseError(new RuntimeException("can't find title")))(
-                  IO.pure)
-              artist <- root.artObject.principalMaker.string
-                  .getOption(json)
-                  .fold[IO[String]](IO.raiseError(new RuntimeException("can't find artist")))(
-                    IO.pure)
-              url <- root.artObject.webImage.url.string
-                .getOption(json)
-                .fold[IO[String]](IO.raiseError(new RuntimeException("can't find url")))(
-                  IO.pure)
-              description <- root.artObject.plaqueDescriptionEnglish.string
-                .getOption(json)
-                .fold[IO[String]](IO.raiseError(new RuntimeException("can't find description")))(
-                  IO.pure)
-              detail = Detail(title, artist, url, description)
-            } yield detail
-          case _ => IO.raiseError(new RuntimeException("bad request"))
-        }
+    //def get(objectNumber: ObjectNumber): IO[DetailsClient.Detail] = {
+    val request: Request[IO] = Request[IO](uri = createUrl(objectNumber))
+    C.fetch[DetailsClient.Detail](request) { d =>
+      d.status match {
+        case Status.Ok =>
+          for {
+            json <- d.as[Json]
+            title <- root.artObject.title.string
+              .getOption(json)
+              .fold[IO[String]](IO.raiseError(new RuntimeException("can't find title")))(
+                IO.pure)
+            artist <- root.artObject.principalMaker.string
+              .getOption(json)
+              .fold[IO[String]](IO.raiseError(new RuntimeException("can't find artist")))(
+                IO.pure)
+            url <- root.artObject.webImage.url.string
+              .getOption(json)
+              .fold[IO[String]](IO.raiseError(new RuntimeException("can't find url")))(
+                IO.pure)
+            description <- root.artObject.plaqueDescriptionEnglish.string
+              .getOption(json)
+              .fold[IO[String]](IO.raiseError(new RuntimeException("can't find description")))(
+                IO.pure)
+            detail = Detail(title, artist, url, description)
+          } yield detail
+        case _ => IO.raiseError(new RuntimeException("bad request"))
       }
     }
   }
