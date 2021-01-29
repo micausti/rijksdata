@@ -4,6 +4,7 @@ import cats.effect.{ContextShift, IO}
 import com.amazonaws.services.sqs.{AmazonSQS, AmazonSQSClientBuilder}
 import com.michelle.rijksdata.lambdaProcessing.{ConsumeAction, SqsRetryConfig, SqsRetryHandler, Unmarshaller}
 
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 abstract class Lambda[T:Unmarshaller]
@@ -14,14 +15,15 @@ with EffectfulLogging {
   implicit val cs: ContextShift[IO] = IO.contextShift(ec)
   lazy val sqsClient: AmazonSQS = AmazonSQSClientBuilder.standard().build
 
-
-  //todo decide if this should go to sqs queue or have lambda handle the failures directly
+//incoming queues
   override val config: SqsRetryConfig = SqsRetryConfig(
     queueUrl = ???,
     deadLetterQueueUrl = ???,
     sqsClient,
-    timeoutBetweenRequeue = ???
+    timeoutBetweenRequeue = 10.seconds
   )
+
+
 
   override val process: T => IO[ConsumeAction] = {
 ???
