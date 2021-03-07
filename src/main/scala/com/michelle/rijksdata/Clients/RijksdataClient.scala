@@ -3,7 +3,6 @@ package com.michelle.rijksdata.Clients
 import cats.effect.IO
 import cats.implicits.catsSyntaxApplicativeId
 import com.michelle.rijksdata.EffectfulLogging
-import com.michelle.rijksdata.Models.Rijksdata.RijksdataObjectDetail
 import com.michelle.rijksdata.Models.RijksdataSearchResponse
 import io.circe.generic.semiauto._
 import io.circe.optics.JsonPath.root

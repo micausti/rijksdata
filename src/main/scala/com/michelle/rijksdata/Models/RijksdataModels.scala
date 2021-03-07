@@ -17,12 +17,7 @@ object RijksdataObjectDetail {
   implicit val decoder: Decoder[RijksdataObjectDetail] = deriveDecoder
 }
 
-case class RijksdataSearchHit(objectDetail: RijksdataObjectDetail)
-object RijksdataSearchHit {
-  implicit val decoder: Decoder[RijksdataSearchHit] = deriveDecoder
-}
-
-case class RijksdataSearchResponse(searchHits: List[RijksdataSearchHit])
+case class RijksdataSearchResponse(searchHits: List[RijksdataObjectDetail])
 object RijksdataSearchResponse {
   implicit val decoder: Decoder[RijksdataSearchResponse] = deriveDecoder
 }

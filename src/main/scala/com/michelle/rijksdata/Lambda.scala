@@ -22,8 +22,8 @@ class Lambda extends EffectfulLogging {
     for {
       config       <- Resource.liftF(Config.loadConfig)
       http4sClient <- BlazeClientBuilder[IO](global).resource
-      rijksdataClient = RijksdataClient(???)
-    } yield Resources(config, RijksdataClient)
+      rijksdataClient = RijksdataClient(http4sClient, config.baseUri, config.apiKey)
+    } yield Resources(config, rijksdataClient)
 
 }
 case class Resources(config: Config, rijksdataClient: RijksdataClient)

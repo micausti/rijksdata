@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
       "org.specs2"                  %% "specs2-core"         % Specs2Version % "test",
       "ch.qos.logback"              %  "logback-classic"     % LogbackVersion,
       "io.circe"                    %% "circe-optics"        % CirceVersion,
+      "io.circe" %% "circe-literal" % CirceVersion,
       "org.scalatest"  %% "scalatest"                        % "3.1.1" % "test",
       "org.scalamock"  %% "scalamock"                        % "4.4.0" % "test",
       "org.scalacheck" %% "scalacheck"                       % "1.14.0" % "test",
