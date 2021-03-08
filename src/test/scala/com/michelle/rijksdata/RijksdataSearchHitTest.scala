@@ -1,6 +1,5 @@
 package com.michelle.rijksdata
 
-import com.michelle.rijksdata.Models.CollectionResponse.{ArtObject, Count, WebImage}
 import com.michelle.rijksdata.Models._
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -10,8 +9,8 @@ class RijksdataSearchResponseTest extends AnyFreeSpecLike with Matchers {
   import RijksdataSearchResponseTest._
 
   "RijksdataSearchResponse decoder" - {
-    "should be able to decode json returned from the rijksdata endpoint" in {
-      CollectionResponse.decoder.decodeJson(testJson) shouldBe Right(
+    "should be able to decode Collection Response json returned from the rijksdata endpoint" in {
+      CollectionResponse.collectionResponseDecoder.decodeJson(testJson) shouldBe Right(
         expectedValue)
     }
   }
@@ -27,9 +26,8 @@ object RijksdataSearchResponseTest {
 //    "Japan"
 //  )
   val firstArtObject = ArtObject(
-    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
-    "Katsushika Hokusai",
-    "Japan"
+    "Clear Weather with a Southerly Wind",
+    "Katsushika Hokusai"
   )
 //  val secondArtObject = ArtObject(
 //    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
@@ -39,12 +37,11 @@ object RijksdataSearchResponseTest {
 //    "Japan"
 //  )
   val secondArtObject = ArtObject(
-    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
-    "Ohara Koson",
-    "Japan"
+    "Zilverreiger in de regen",
+    "Ohara Koson"
   )
   val expectedValue =
-    CollectionResponse(List(firstArtObject, secondArtObject))
+    CollectionResponse(0, 4337, List(firstArtObject, secondArtObject))
 
   val testJson = json"""{
     "elapsedMilliseconds": 0,

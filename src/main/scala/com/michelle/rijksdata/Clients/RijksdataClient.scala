@@ -4,7 +4,6 @@ import cats.effect.IO
 import cats.implicits.catsSyntaxApplicativeId
 import com.michelle.rijksdata.EffectfulLogging
 import com.michelle.rijksdata.Models.CollectionResponse
-import com.michelle.rijksdata.Models.CollectionResponse.Count
 import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.{EntityDecoder, EntityEncoder, Request, _}
@@ -24,7 +23,7 @@ object RijksdataClient extends EffectfulLogging {
         val url = baseUri.withQueryParam("key", apiKey).withQueryParam("technique", "colour+woodcut")
         client.run(Request[IO](GET, url)).use {
           case response if response.status.isSuccess => response.as[CollectionResponse]
-          case _ => CollectionResponse(List.empty).pure[IO]
+          case _ => CollectionResponse(0, 0, List.empty).pure[IO]
         }
 
       }
