@@ -1,6 +1,7 @@
 package com.michelle.rijksdata
 
-import com.michelle.rijksdata.Models.{RijksdataObjectDetail, RijksdataSearchResponse}
+import com.michelle.rijksdata.Models.CollectionResponse.{ArtObject, Count, WebImage}
+import com.michelle.rijksdata.Models._
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.matchers.should.Matchers
 import io.circe.literal._
@@ -10,20 +11,42 @@ class RijksdataSearchResponseTest extends AnyFreeSpecLike with Matchers {
 
   "RijksdataSearchResponse decoder" - {
     "should be able to decode json returned from the rijksdata endpoint" in {
-      RijksdataSearchResponse.decoder.decodeJson(testJson) shouldBe Right(expectedValue)
+      CollectionResponse.decoder.decodeJson(testJson) shouldBe Right(
+        expectedValue)
     }
   }
-
 
 }
 
 object RijksdataSearchResponseTest {
-  val firstRijksdataObjectDetail = RijksdataObjectDetail("longtitle", "principalofmaker", "webimageurl", "productionplaces")
-  val secondRijksdataObjectDetail = RijksdataObjectDetail("longtitle", "principalofmaker", "webimageurl", "productionplaces")
-  val rijksdataSearchHit = List(firstRijksdataObjectDetail, secondRijksdataObjectDetail)
-  val expectedValue = RijksdataSearchResponse(rijksdataSearchHit)
+//  val firstArtObject = ArtObject(
+//    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
+//    "Katsushika Hokusai",
+//    WebImage(
+//      "https://lh5.ggpht.com/tjcPcIxRAZA7Ufl8sUCmfvjoHJ7t2VIykyCIGZ6eCvxnu53L5IMiCR1La8B9BKL7q4CjkW6z4BYhP7kU1Es9RoanHDMl=s0"),
+//    "Japan"
+//  )
+  val firstArtObject = ArtObject(
+    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
+    "Katsushika Hokusai",
+    "Japan"
+  )
+//  val secondArtObject = ArtObject(
+//    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
+//    "Ohara Koson",
+//    WebImage(
+//      "https://lh4.ggpht.com/zk1MLRvb74WIYAUPNiz8xNPUVCRwDn5WUwFOJeCv1y7Nx0ddaf9uEJtRnI8SO4EvYwOucGQ-kb_l_vcv7gJt2Or7rKI=s0"),
+//    "Japan"
+//  )
+  val secondArtObject = ArtObject(
+    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
+    "Ohara Koson",
+    "Japan"
+  )
+  val expectedValue =
+    CollectionResponse(List(firstArtObject, secondArtObject))
 
-  val testJson =  json"""{
+  val testJson = json"""{
     "elapsedMilliseconds": 0,
     "count": 4337,
     "countFacets": {
