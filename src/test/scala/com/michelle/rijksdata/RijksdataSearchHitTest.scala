@@ -9,39 +9,41 @@ class RijksdataSearchResponseTest extends AnyFreeSpecLike with Matchers {
   import RijksdataSearchResponseTest._
 
   "RijksdataSearchResponse decoder" - {
+
     "should be able to decode Collection Response json returned from the rijksdata endpoint" in {
-      CollectionResponse.collectionResponseDecoder.decodeJson(testJson) shouldBe Right(
+      CollectionResponse.decodeCollectionResponse.decodeJson(testJson) shouldBe Right(
         expectedValue)
     }
   }
-
 }
 
 object RijksdataSearchResponseTest {
 //  val firstArtObject = ArtObject(
-//    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
 //    "Katsushika Hokusai",
-//    WebImage(
-//      "https://lh5.ggpht.com/tjcPcIxRAZA7Ufl8sUCmfvjoHJ7t2VIykyCIGZ6eCvxnu53L5IMiCR1La8B9BKL7q4CjkW6z4BYhP7kU1Es9RoanHDMl=s0"),
+//    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
+//      "https://lh5.ggpht.com/tjcPcIxRAZA7Ufl8sUCmfvjoHJ7t2VIykyCIGZ6eCvxnu53L5IMiCR1La8B9BKL7q4CjkW6z4BYhP7kU1Es9RoanHDMl=s0",
 //    "Japan"
 //  )
-  val firstArtObject = ArtObject(
-    "Clear Weather with a Southerly Wind",
-    "Katsushika Hokusai"
-  )
+//
 //  val secondArtObject = ArtObject(
-//    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
 //    "Ohara Koson",
-//    WebImage(
-//      "https://lh4.ggpht.com/zk1MLRvb74WIYAUPNiz8xNPUVCRwDn5WUwFOJeCv1y7Nx0ddaf9uEJtRnI8SO4EvYwOucGQ-kb_l_vcv7gJt2Or7rKI=s0"),
+//    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
+//      "https://lh4.ggpht.com/zk1MLRvb74WIYAUPNiz8xNPUVCRwDn5WUwFOJeCv1y7Nx0ddaf9uEJtRnI8SO4EvYwOucGQ-kb_l_vcv7gJt2Or7rKI=s0",
 //    "Japan"
 //  )
-  val secondArtObject = ArtObject(
-    "Zilverreiger in de regen",
-    "Ohara Koson"
+
+  val firstArtObject = ArtObject(
+    "Katsushika Hokusai",
+    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833"
   )
+
+  val secondArtObject = ArtObject(
+    "Ohara Koson",
+    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936"
+  )
+
   val expectedValue =
-    CollectionResponse(0, 4337, List(firstArtObject, secondArtObject))
+    CollectionResponse(4337, List(firstArtObject, secondArtObject))
 
   val testJson = json"""{
     "elapsedMilliseconds": 0,

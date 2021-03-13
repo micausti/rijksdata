@@ -1,14 +1,12 @@
 package com.michelle.rijksdata.Models
 
-import io.circe.Decoder
-import io.circe.generic.auto
 import io.circe.generic.semiauto.deriveDecoder
+import io.circe.Decoder
 
-case class CollectionResponse(elapsedMilliseconds: Int, count: Int, artObjects: List[ArtObject])
-case class ArtObject(title: String, principalOrFirstMaker: String)
+case class ArtObject(principalOrFirstMaker: String, longTitle: String)
+case class CollectionResponse(count: Int, artObjects: List[ArtObject])
 
 object CollectionResponse {
-  implicit val artObjectDecoder: Decoder[ArtObject] = deriveDecoder
-  implicit val collectionResponseDecoder: Decoder[CollectionResponse] =
-    deriveDecoder[CollectionResponse]
+  implicit val decodeArtObject: Decoder[ArtObject] = deriveDecoder[ArtObject]
+  implicit val decodeCollectionResponse: Decoder[CollectionResponse] = deriveDecoder[CollectionResponse]
 }
