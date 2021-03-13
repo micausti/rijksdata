@@ -18,28 +18,19 @@ class RijksdataSearchResponseTest extends AnyFreeSpecLike with Matchers {
 }
 
 object RijksdataSearchResponseTest {
-//  val firstArtObject = ArtObject(
-//    "Katsushika Hokusai",
-//    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
-//      "https://lh5.ggpht.com/tjcPcIxRAZA7Ufl8sUCmfvjoHJ7t2VIykyCIGZ6eCvxnu53L5IMiCR1La8B9BKL7q4CjkW6z4BYhP7kU1Es9RoanHDMl=s0",
-//    "Japan"
-//  )
-//
-//  val secondArtObject = ArtObject(
-//    "Ohara Koson",
-//    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
-//      "https://lh4.ggpht.com/zk1MLRvb74WIYAUPNiz8xNPUVCRwDn5WUwFOJeCv1y7Nx0ddaf9uEJtRnI8SO4EvYwOucGQ-kb_l_vcv7gJt2Or7rKI=s0",
-//    "Japan"
-//  )
 
   val firstArtObject = ArtObject(
     "Katsushika Hokusai",
-    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833"
+    "Clear Weather with a Southerly Wind, Katsushika Hokusai, 1829 - 1833",
+    WebImage("https://lh5.ggpht.com/tjcPcIxRAZA7Ufl8sUCmfvjoHJ7t2VIykyCIGZ6eCvxnu53L5IMiCR1La8B9BKL7q4CjkW6z4BYhP7kU1Es9RoanHDMl=s0"),
+    List("Japan")
   )
 
   val secondArtObject = ArtObject(
     "Ohara Koson",
-    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936"
+    "Zilverreiger in de regen, Ohara Koson, 1925 - 1936",
+    WebImage("https://lh4.ggpht.com/zk1MLRvb74WIYAUPNiz8xNPUVCRwDn5WUwFOJeCv1y7Nx0ddaf9uEJtRnI8SO4EvYwOucGQ-kb_l_vcv7gJt2Or7rKI=s0"),
+    List("Japan")
   )
 
   val expectedValue =
