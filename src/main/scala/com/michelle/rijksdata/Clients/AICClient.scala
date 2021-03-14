@@ -3,7 +3,7 @@ package com.michelle.rijksdata.Clients
 import cats.effect.IO
 import cats.implicits.catsSyntaxApplicativeId
 import com.michelle.rijksdata.EffectfulLogging
-import com.michelle.rijksdata.Models.{AICSearchResponse, Pagination}
+import com.michelle.rijksdata.Models.AICSearchResponse
 import org.http4s.Method.GET
 import org.http4s.{EntityDecoder, Request, Uri}
 import org.http4s.circe.jsonOf
@@ -24,7 +24,7 @@ object AICClient extends EffectfulLogging {
        val urlWithQuery = url.withQueryParam("q", "woodcut")
        client.run(Request[IO](GET, urlWithQuery)).use {
         case response if response.status.isSuccess => response.as[AICSearchResponse]
-        case _ => AICSearchResponse(Pagination(0), List.empty).pure[IO]}
+        case _ => AICSearchResponse(List.empty).pure[IO]}
      }
     }
   }

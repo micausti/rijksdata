@@ -1,6 +1,6 @@
 package com.michelle.rijksdata
 
-import com.michelle.rijksdata.Models.{AICSearchResponse, ApiLink, Pagination}
+import com.michelle.rijksdata.Models.{AICSearchResponse, ApiLink}
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.matchers.should.Matchers
 import io.circe.literal._
@@ -9,7 +9,7 @@ class AICSearchResponseTest extends AnyFreeSpecLike with Matchers {
   import AICSearchResponseTest._
    "ArtInsChiResponse decoder" - {
      "should be able to decode the Search Response json returned from the Art Institute Chicago endpoint" in {
-       AICSearchResponse.AICSearchResponseDecoder.decodeJson(testJson) shouldBe expectedResult
+       AICSearchResponse.AICSearchResponseDecoder.decodeJson(testJson) shouldBe Right(expectedResult)
      }
    }
 
@@ -19,7 +19,7 @@ class AICSearchResponseTest extends AnyFreeSpecLike with Matchers {
     val apiLink2 = ApiLink("https://api.artic.edu/api/v1/artworks/8390")
     val apiLink3 = ApiLink("https://api.artic.edu/api/v1/artworks/4535")
 
-    val expectedResult = AICSearchResponse(Pagination(2016), List(apiLink1, apiLink2, apiLink3))
+    val expectedResult = AICSearchResponse(List(apiLink1, apiLink2, apiLink3))
 
     val testJson = json"""
     {
