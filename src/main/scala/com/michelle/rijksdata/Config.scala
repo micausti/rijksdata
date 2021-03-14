@@ -3,7 +3,7 @@ package com.michelle.rijksdata
 import cats.effect.IO
 import org.http4s.Uri
 
-case class Config(baseUri: Uri, apiKey: String) {}
+case class Config(rijksdataBaseUri: Uri, rijksdataApiKey: String, aicBaseUri: Uri) {}
 
 object Config {
 
@@ -12,10 +12,10 @@ object Config {
       config <- IO(sys.env.getOrElse("ENVIRONMENT", "local")).map {
         case "prd" =>
           Config(Uri(path = "https://www.rijksmuseum.nl/api/en/collection"),
-                 "apiKey")
+                 "apiKey", Uri(path = "https://api.artic.edu/api/v1"))
         case "local" =>
           Config(Uri(path = "https://www.rijksmuseum.nl/api/en/collection"),
-                 "apiKey")
+                 "apiKey", Uri(path = "https://api.artic.edu/api/v1"))
       }
     } yield config
 }
