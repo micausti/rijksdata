@@ -1,7 +1,7 @@
 package com.michelle.rijksdata.Clients
 
 import cats.effect.IO
-import cats.implicits.catsSyntaxApplicativeId
+import cats.implicits._
 import com.michelle.rijksdata.EffectfulLogging
 import com.michelle.rijksdata.Models.{MetObjectResult, MetSearchResult}
 import org.http4s.Method.GET
@@ -11,7 +11,7 @@ import org.http4s.client.Client
 
 trait MetClient {
   def getSearchResult: IO[MetSearchResult]
-  def getObjectResult(objectId: Int): IO[MetObjectResult]
+  def getObjectResult(metSearchResult: MetSearchResult): IO[List[MetObjectResult]]
 }
 
 object MetClient extends EffectfulLogging {
@@ -32,12 +32,16 @@ object MetClient extends EffectfulLogging {
 
       implicit val metObjectResultEntityDecoder: EntityDecoder[IO, MetObjectResult] = jsonOf
 
-      override def getObjectResult(objectId: Int): IO[MetObjectResult] = {
-        val url = baseUri / "public" / "collection" / "v1" / " objects"
-        //TODO pass in object ID
-        //TODO call for each item in the list
-      }
+      override def getObjectResult(metSearchResult: MetSearchResult): IO[List[MetObjectResult]] = {
+        val url = baseUri/ "public" / "collection" / "v1" / "objects"
+        val urls = metSearchResult.objectIDs.map(id => Uri(path = (url / id.toString).path))
+        urls.map(u =>
+        client.run(Request[IO](GET, u)).use {
+          case response if response.status.isSuccess =>
+          response.as[MetObjectResult]
+          case _ => MetObjectResult("", "", "", "").pure[IO]
+        })
+      }.sequence
     }
   }
-
 }
