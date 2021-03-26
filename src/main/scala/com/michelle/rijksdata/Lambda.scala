@@ -42,23 +42,12 @@ class Lambda extends EffectfulLogging {
 
 
   def getFiles(resources:Resources)(implicit clock: Clock[IO], contextShift: ContextShift[IO]): IO[Unit] = {
-    val getFilesBuilder = new GetFilesBuilder
+    val getFilesBuilder = new GetFilesBuilder(resources.AICClient, resources.metClient, resources.rijksdataClient)
 
     for {
-    rijks <- getFilesBuilder.getFilesFor(resources.config.rijksdataBaseUri).run().handleErrors("rijksData").start
-    aic <- getFilesBuilder.getFilesFor(resources.config.aicBaseUri).run().handleErrors("art institute Chicago").start
-    met <- getFilesBuilder.getFilesFor(resources.config.metBaseUri).run().handleErrors("met").start
-    rijksStatus <- rijks.join
-    aicStatus <- aic.join
-    metStatus <- met.join
-    _ <- if (List(rijksStatus, aicStatus, metStatus).forall(_ == JobStatus.Success)) {
-      logger.info("All getFile jobs completed successfully")
-    } else {
-      val msg = s"Not all jobs completed successfully. \n Rijks; $rijksStatus \n AIC: $aicStatus \n MEt: $metStatus"
-      logger.error(msg) >>
-        IO.raiseError(new RuntimeException(msg))
-    }
-
+    rijks <- getFilesBuilder.getFilesForRijks
+    aic <- getFilesBuilder.getFilesForAIC
+    met <- getFilesBuilder.getFilesForMet
     } yield ()
   }
 }
