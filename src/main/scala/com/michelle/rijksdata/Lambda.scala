@@ -42,7 +42,7 @@ class Lambda extends EffectfulLogging {
 
 
   def getFiles(resources:Resources)(implicit clock: Clock[IO], contextShift: ContextShift[IO]): IO[List[String]] = {
-    val getFilesBuilder = new GetFilesBuilder(resources.AICClient, resources.metClient, resources.rijksdataClient)
+    val getFilesBuilder = new GetUrls(resources.AICClient, resources.metClient, resources.rijksdataClient)
 
     for {
     rijks <- getFilesBuilder.getFilesForRijks

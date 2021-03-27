@@ -3,7 +3,7 @@ package com.michelle.rijksdata
 import cats.effect.{Clock, IO}
 import com.michelle.rijksdata.Clients.{AICClient, MetClient, RijksdataClient}
 
-class GetFilesBuilder(aicClient: AICClient, metClient: MetClient, rijksdataClient: RijksdataClient)(implicit clock: Clock[IO]) {
+class GetUrls(aicClient: AICClient, metClient: MetClient, rijksdataClient: RijksdataClient)(implicit clock: Clock[IO]) {
 
   def getFilesForAIC: IO[List[String]] = {
     for {
@@ -26,3 +26,4 @@ class GetFilesBuilder(aicClient: AICClient, metClient: MetClient, rijksdataClien
     collectionResponse.map(_.artObjects.map(_.webImage.url))
   }
 }
+
