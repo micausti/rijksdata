@@ -1,6 +1,8 @@
 package com.michelle.rijksdata
 
 import cats.effect.{Clock, IO}
+import cats.implicits.catsSyntaxFlatMapOps
+import com.michelle.rijksdata.Clients.AICClient.logger
 import com.michelle.rijksdata.Clients.{AICClient, MetClient, RijksdataClient}
 
 class GetUrls(aicClient: AICClient, metClient: MetClient, rijksdataClient: RijksdataClient)(implicit clock: Clock[IO]) {

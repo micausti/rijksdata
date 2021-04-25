@@ -8,6 +8,7 @@ case class Config(rijksdataBaseUri: Uri,
                   aicBaseUri: Uri,
                   metBaseUri: Uri) {}
 
+
 object Config {
 
   def loadConfig: IO[Config] =
@@ -15,17 +16,17 @@ object Config {
       config <- IO(sys.env.getOrElse("ENVIRONMENT", "local")).map {
         case "prd" =>
           Config(
-            Uri(path = "https://www.rijksmuseum.nl/api/en/collection"),
+            Uri.unsafeFromString("https://www.rijksmuseum.nl/api/en/collection"),
             "apiKey",
-            Uri(path = "https://api.artic.edu/api/v1"),
-            Uri(path = "https://collectionapi.metmuseum.org")
+            Uri.unsafeFromString("https://api.artic.edu/api/v1"),
+            Uri.unsafeFromString("https://collectionapi.metmuseum.org")
           )
         case "local" =>
           Config(
-            Uri(path = "https://www.rijksmuseum.nl/api/en/collection"),
+            Uri.unsafeFromString("https://www.rijksmuseum.nl/api/en/collection"),
             "apiKey",
-            Uri(path = "https://api.artic.edu/api/v1"),
-            Uri(path = "https://collectionapi.metmuseum.org")
+            Uri.unsafeFromString("https://api.artic.edu/api/v1"),
+            Uri.unsafeFromString("https://collectionapi.metmuseum.org")
           )
       }
     } yield config
