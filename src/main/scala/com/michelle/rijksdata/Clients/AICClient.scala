@@ -41,6 +41,7 @@ object AICClient extends EffectfulLogging {
         val urls = aicSearchResponse.data.map(l => Uri(path = l.api_link))
         urls
           .map(u =>
+            logger.info(s"url $u") >>
             client
               .run(Request[IO](GET, u))
               .use {
