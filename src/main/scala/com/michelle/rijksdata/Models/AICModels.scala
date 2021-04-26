@@ -14,20 +14,16 @@ object AICSearchResponse {
 }
 
 case class AICItemResult(data: ItemData, config: ItemConfig)
-case class ItemData(title: String,
-                    artist_display: String,
-                    place_of_origin: String,
-                    image_id: String)
+case class ItemData(title: String, artist_display: String, place_of_origin: String, image_id: String)
 case class ItemConfig(iiif_url: String)
 
 object AICItemResult {
   implicit val AICItemResultDecoder: Decoder[AICItemResult] = deriveDecoder
-  implicit val itemDataDecoder: Decoder[ItemData] = deriveDecoder
-  implicit val itemConfigDecoder: Decoder[ItemConfig] = deriveDecoder
+  implicit val itemDataDecoder: Decoder[ItemData]           = deriveDecoder
+  implicit val itemConfigDecoder: Decoder[ItemConfig]       = deriveDecoder
 }
 
-case class AIC(itemResult: AICItemResult){
-  def createImageLink = {
+case class AIC(itemResult: AICItemResult) {
+  def createImageLink =
     itemResult.config.iiif_url.concat("/").concat(itemResult.data.image_id).concat("/full/843,/0/default.jpg")
-  }
 }

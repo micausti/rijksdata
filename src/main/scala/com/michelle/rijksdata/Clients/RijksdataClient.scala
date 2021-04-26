@@ -18,16 +18,18 @@ object RijksdataClient extends EffectfulLogging {
 
   implicit val rijksdataSearchResponseEntityDecoder: EntityDecoder[IO, CollectionResponse] = jsonOf
 
-  def apply(client: Client[IO], baseUri: Uri, apiKey: String): RijksdataClient = {
+  def apply(client: Client[IO], baseUri: Uri, apiKey: String): RijksdataClient =
     new RijksdataClient {
       override def getObjectWithTechnique: IO[CollectionResponse] = {
-        val url = baseUri.withQueryParam("key", "J5mQRBz3").withQueryParam("technique", "colour+woodcut")
+        val url     = baseUri.withQueryParam("key", "J5mQRBz3").withQueryParam("technique", "colour+woodcut")
         val request = Request[IO](GET, url)
-        logger.info(s"request $request")>>logger.info(s"base uri $baseUri") >> client.run(request).use {
-          case response if response.status.isSuccess => response.as[CollectionResponse]
-          case _ => CollectionResponse(0, List.empty).pure[IO]
-        }.flatTap(response => logger.info(s"collection response $response"))
+        logger.info(s"request $request") >> logger.info(s"base uri $baseUri") >> client
+          .run(request)
+          .use {
+            case response if response.status.isSuccess => response.as[CollectionResponse]
+            case _                                     => CollectionResponse(0, List.empty).pure[IO]
+          }
+          .flatTap(response => logger.info(s"collection response $response"))
       }
     }
-  }
 }
