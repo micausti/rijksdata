@@ -18,6 +18,7 @@ class GetUrls(aicClient: AICClient, metClient: MetClient, rijksdataClient: Rijks
   def getFilesForMet: IO[List[String]] = {
     for {
     searchResponse <- metClient.getSearchResult
+    _ <- logger.info(s"finished searching")
     items <- metClient.getObjectResult(searchResponse)
     urls <- IO(items.map(_.primaryImage))
     } yield urls

@@ -1,13 +1,14 @@
 package com.michelle.rijksdata
 
-import cats.effect.{Clock, ContextShift, IO, Resource, Timer, Fiber}
+import cats.effect.{Clock, ContextShift, Fiber, IO, Resource, Timer}
 import com.michelle.rijksdata.Clients.{AICClient, MetClient, RijksdataClient}
 import com.michelle.rijksdata.Models.JobStatus
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.client.blaze.{BlazeClientBuilder, BlazeClientConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.control.NonFatal
 import cats.implicits._
+import org.http4s.client.blaze.ParserMode.Lenient
 
 class Lambda extends EffectfulLogging {
 
@@ -25,7 +26,7 @@ class Lambda extends EffectfulLogging {
       implicit contextShift: ContextShift[IO]): Resource[IO, Resources] =
     for {
       config <- Resource.liftF(Config.loadConfig)
-      http4sClient <- BlazeClientBuilder[IO](global).resource
+      http4sClient <- BlazeClientBuilder[IO](global).withParserMode(Lenient).resource
       rijksdataClient = RijksdataClient(http4sClient,
                                         config.rijksdataBaseUri,
                                         config.rijksdataApiKey)

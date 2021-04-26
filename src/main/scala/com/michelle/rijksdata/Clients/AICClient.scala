@@ -29,13 +29,14 @@ object AICClient extends EffectfulLogging {
   def apply(client: Client[IO], baseUri: Uri): AICClient = {
     new AICClient {
       override def getSearchResult: IO[AICSearchResponse] = {
-        val url = baseUri / "search" / "artworks"
+        val url = baseUri / "artworks" / "search"
         val urlWithQuery = url.withQueryParam("q", "woodcut")
+        logger.info(s"url $urlWithQuery") >>
         client.run(Request[IO](GET, urlWithQuery)).use {
           case response if response.status.isSuccess =>
-            response.as[AICSearchResponse]
-          case _ => AICSearchResponse(List.empty).pure[IO]
-        }
+            logger.info(s"response code ${response.status}") >> response.as[AICSearchResponse]
+          case fail => logger.info(s"response code ${fail.status}") >> AICSearchResponse(List.empty).pure[IO]
+        }.flatTap(response => logger.info(s"response ${response}"))
       }
 
       implicit val AICItemResultEntityDecoder
@@ -47,11 +48,13 @@ object AICClient extends EffectfulLogging {
         urls.map(u =>
           client.run(Request[IO](GET, u)).use {
             case response if response.status.isSuccess =>
+              logger.info(s"response code ${response.status}") >>
               response.as[AICItemResult]
-            case _ =>
+            case fail =>
+              logger.info(s"response code ${fail.status}") >>
               AICItemResult(ItemData("", "", "", ""), ItemConfig("")).pure[IO]
-        })
-      }.sequence
+        }.flatTap(response => logger.info(s"response $response"))).sequence
+      }
     }
   }
 }
