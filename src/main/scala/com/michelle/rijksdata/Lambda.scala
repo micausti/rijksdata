@@ -42,12 +42,12 @@ class Lambda extends EffectfulLogging {
     val getFilesBuilder = new GetUrls(resources.AICClient, resources.metClient, resources.rijksdataClient)
 
     for {
-      _            <- logger.info(s"aic")
-      aic          <- getFilesBuilder.getFilesForAIC
-      _            <- logger.info(s"rijks")
-      rijks        <- getFilesBuilder.getFilesForRijks
       _            <- logger.info(s"met")
       met          <- getFilesBuilder.getFilesForMet
+      _            <- logger.info(s"rijks")
+      rijks        <- getFilesBuilder.getFilesForRijks
+      _            <- logger.info(s"aic")
+      aic          <- getFilesBuilder.getFilesForAIC
       compiledUrls <- IO(rijks ++ aic ++ met)
     } yield compiledUrls
   }

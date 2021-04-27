@@ -1,6 +1,6 @@
 package com.michelle.rijksdata.Clients
 
-import cats.effect.IO
+import cats.effect.{ContextShift, IO}
 import cats.implicits._
 import com.michelle.rijksdata.EffectfulLogging
 import com.michelle.rijksdata.Models.{MetObjectResult, MetSearchResult}
@@ -18,7 +18,7 @@ object MetClient extends EffectfulLogging {
 
   implicit val metSearchResultEntityDecoder: EntityDecoder[IO, MetSearchResult] = jsonOf
 
-  def apply(client: Client[IO], baseUri: Uri): MetClient =
+  def apply(client: Client[IO], baseUri: Uri)(implicit cs: ContextShift[IO]): MetClient =
     new MetClient {
       override def getSearchResult: IO[MetSearchResult] = {
         val url          = baseUri / "public" / "collection" / "v1" / "search"
@@ -36,18 +36,12 @@ object MetClient extends EffectfulLogging {
       implicit val metObjectResultEntityDecoder: EntityDecoder[IO, MetObjectResult] = jsonOf
 
       override def getObjectResult(metSearchResult: MetSearchResult): IO[List[MetObjectResult]] = {
-        val url  = baseUri / "public" / "collection" / "v1" / "objects"
-        val urls = metSearchResult.objectIDs.map(id => Uri(path = (url / id.toString).path))
-        urls.map(u =>
-          logger.info(s"url $u") >> client
-            .run(Request[IO](GET, u))
-            .use {
-              case response if response.status.isSuccess =>
-                response.as[MetObjectResult]
-              case _ => MetObjectResult("", "", "", "").pure[IO]
-            }
-            .flatTap(response => logger.info(s"response $response"))
-        )
-      }.sequence
+        val objects = metSearchResult.objectIDs.map(o => o.toString)
+        def getObject(objectId: String): IO[MetObjectResult] = {
+          val target = Uri.uri("https://collectionapi.metmuseum.org/public/collection/v1/objects") / objectId
+          client.expect[MetObjectResult](target)
+        }
+        objects.parTraverse(getObject)
+      }
     }
 }
