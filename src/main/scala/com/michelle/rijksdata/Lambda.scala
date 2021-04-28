@@ -1,13 +1,10 @@
 package com.michelle.rijksdata
 
-import cats.effect.{Clock, ContextShift, Fiber, IO, Resource, Timer}
+import cats.effect.{Clock, ContextShift, IO, Resource, Timer}
 import com.michelle.rijksdata.Clients.{AICClient, MetClient, RijksdataClient}
-import com.michelle.rijksdata.Models.JobStatus
-import org.http4s.client.blaze.{BlazeClientBuilder, BlazeClientConfig}
+import org.http4s.client.blaze.BlazeClientBuilder
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.control.NonFatal
-import cats.implicits._
 import org.http4s.client.blaze.ParserMode.Lenient
 
 class Lambda extends EffectfulLogging {
@@ -31,13 +28,6 @@ class Lambda extends EffectfulLogging {
       metClient       = MetClient(http4sClient, config.metBaseUri)
     } yield Resources(config, rijksdataClient, aicClient, metClient)
 
-  private implicit class LogErrors(iou: IO[JobStatus]) {
-    def handleErrors(jobName: String): IO[JobStatus] =
-      iou.recoverWith {
-        case NonFatal(t) => logger.error(t)(s"Error running job $jobName").as(JobStatus.Failed)
-      }
-  }
-
   def getFiles(resources: Resources)(implicit clock: Clock[IO], contextShift: ContextShift[IO]): IO[List[String]] = {
     val getFilesBuilder = new GetUrls(resources.AICClient, resources.metClient, resources.rijksdataClient)
 
@@ -49,6 +39,7 @@ class Lambda extends EffectfulLogging {
       _            <- logger.info(s"aic")
       aic          <- getFilesBuilder.getFilesForAIC
       compiledUrls <- IO(rijks ++ aic ++ met)
+    _ <- logger.info(s"all Urls $compiledUrls")
     } yield compiledUrls
   }
 }

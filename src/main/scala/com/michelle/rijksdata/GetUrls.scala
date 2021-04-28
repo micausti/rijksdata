@@ -1,7 +1,6 @@
 package com.michelle.rijksdata
 
 import cats.effect.{Clock, IO}
-import cats.implicits.catsSyntaxFlatMapOps
 import com.michelle.rijksdata.Clients.AICClient.logger
 import com.michelle.rijksdata.Clients.{AICClient, MetClient, RijksdataClient}
 
@@ -11,9 +10,9 @@ class GetUrls(aicClient: AICClient, metClient: MetClient, rijksdataClient: Rijks
     for {
       searchResponse <- aicClient.getSearchResult
       items          <- aicClient.getItemResult(searchResponse)
-      _ <- logger.info(s"finished getting items")
-      urls           <- aicClient.getImageUrls(items)
-     _ <- logger.info(s"finished getting urls")
+      _              <- logger.info(s"finished getting items")
+      urls           <- IO(aicClient.prepareImageUrls(items))
+      _              <- logger.info(s"urls $urls")
     } yield urls
 
   def getFilesForMet: IO[List[String]] =
@@ -21,9 +20,9 @@ class GetUrls(aicClient: AICClient, metClient: MetClient, rijksdataClient: Rijks
       searchResponse <- metClient.getSearchResult
       _              <- logger.info(s"finished searching")
       items          <- metClient.getObjectResult(searchResponse)
-      _ <- logger.info(s"met objects $items")
+      _              <- logger.info(s"met objects $items")
       urls           <- IO(items.map(_.primaryImage))
-    _ <- logger.info(s"urls $urls")
+      _              <- logger.info(s"urls $urls")
     } yield urls
 
   def getFilesForRijks: IO[List[String]] = {

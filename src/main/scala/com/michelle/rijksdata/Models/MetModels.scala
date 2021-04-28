@@ -4,7 +4,7 @@ import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 
 case class MetSearchResult(objectIDs: List[Int])
-case class MetObjectResult(primaryImage: String, title: String, artistDisplayName: String, artistNationality: String)
+case class MetObjectResult(primaryImage: String)
 
 object MetSearchResult {
   implicit val metSearchResultDecoder: Decoder[MetSearchResult] = deriveDecoder

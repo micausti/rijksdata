@@ -4,8 +4,8 @@ import io.circe.generic.semiauto.deriveDecoder
 import io.circe.Decoder
 
 case class WebImage(url: String)
-case class ArtObject(principalOrFirstMaker: String, longTitle: String, webImage: WebImage, productionPlaces: List[String])
-case class CollectionResponse(count: Int, artObjects: List[ArtObject])
+case class ArtObject(webImage: WebImage)
+case class CollectionResponse(artObjects: List[ArtObject])
 
 object CollectionResponse {
   implicit val webImageDecoder: Decoder[WebImage]                    = deriveDecoder[WebImage]
