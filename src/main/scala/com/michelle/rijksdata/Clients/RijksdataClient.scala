@@ -1,6 +1,7 @@
 package com.michelle.rijksdata.Clients
 
 import cats.effect.IO
+import cats.implicits.catsSyntaxFlatMapOps
 import com.michelle.rijksdata.EffectfulLogging
 import com.michelle.rijksdata.Models.CollectionResponse
 import org.http4s.circe._
@@ -18,8 +19,8 @@ object RijksdataClient extends EffectfulLogging {
   def apply(client: Client[IO], baseUri: Uri, apiKey: String): RijksdataClient =
     new RijksdataClient {
       override def getObjectWithTechnique: IO[CollectionResponse] = {
-        val url     = baseUri.withQueryParam("key", "J5mQRBz3").withQueryParam("technique", "colour+woodcut")
-        client.expect[CollectionResponse](url)
+        val url     = baseUri.withQueryParam("key", "J5mQRBz3").withQueryParam("technique", "painting")
+        logger.info(s"get object Url $url") >> client.expect[CollectionResponse](url)
       }
     }
 }

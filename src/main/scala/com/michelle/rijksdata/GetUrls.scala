@@ -1,5 +1,6 @@
 package com.michelle.rijksdata
 
+import cats.FlatMap.ops.toAllFlatMapOps
 import cats.effect.{Clock, IO}
 import com.michelle.rijksdata.Clients.AICClient.logger
 import com.michelle.rijksdata.Clients.{AICClient, MetClient, RijksdataClient}
@@ -25,8 +26,11 @@ class GetUrls(aicClient: AICClient, metClient: MetClient, rijksdataClient: Rijks
       _              <- logger.info(s"urls $urls")
     } yield urls
 
-  def getFilesForRijks: IO[List[String]] = {
-    val collectionResponse = rijksdataClient.getObjectWithTechnique
-    collectionResponse.map(_.artObjects.map(_.webImage.url))
-  }
+  def getFilesForRijks: IO[List[String]] =
+    for {
+      collectionResponse <- rijksdataClient.getObjectWithTechnique
+      _                  <- logger.info(s"collection Response $collectionResponse")
+      urls               <- IO(collectionResponse.artObjects.map(_.webImage.url))
+      _                  <- logger.info(s"urls $urls")
+    } yield urls
 }
